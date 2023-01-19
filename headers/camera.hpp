@@ -1,13 +1,21 @@
 #pragma once
 #include "math.hpp"
 
+float float_rand() {
+    return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+}
+
+float lil_rand_float() {
+    return (float_rand() - 0.5f) * 0.025f;
+}
+
 class Camera
 {
     public:
         Camera(uint32_t _width, uint32_t _height, float _fov, Matrix4x4f _c2w);
         Ray get_ray(float u, float v);
 
-    public:
+    private:
         uint32_t width;
         uint32_t height;
         float fov;
@@ -29,10 +37,10 @@ Camera::Camera(uint32_t _width, uint32_t _height, float _fov, Matrix4x4f _c2w)
 
 Ray Camera::get_ray(float u, float v)
 {
-    float ndc_x = (2.0f * (u + 0.5f)/(float)width - 1.0f)*scale;
-    float ndc_y = (1.0f - 2.0f * (v+0.5f)/(float)height)*scale*1.0f/image_aspect_ratio;
+    float ndc_x = (2.0f * (u + 0.5f + lil_rand_float())/(float)width - 1.0f)*scale;
+    float ndc_y = (1.0f - 2.0f * (v  +0.5f + lil_rand_float())/(float)height)*scale*1.0f/image_aspect_ratio;
     Ray r;
-    Vector3f orig = Vector3f(0.0f,0.0f,0.0f);
+    Vector3f orig = Vector3f(0.0f + lil_rand_float(),0.0f + lil_rand_float(), 0.0f);
     Vector3f dir = glm::normalize(Vector3f(ndc_x, ndc_y,-1.0f));
     
     r.o = TransformPointMatrix(c2w,orig);

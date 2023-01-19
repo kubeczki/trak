@@ -8,16 +8,9 @@ struct Vertex
     Vector2f UV;
 };
 
-struct Color
-{
-    Vector3f ambient;
-    Vector3f diffuse;
-    Vector3f specular;
-    Vector3f emissive;
-};
 class Triangle : public Shape
 {public:
-    Triangle(Vertex _v0, Vertex _v1, Vertex _v2, Color _color)
+    Triangle(Vertex _v0, Vertex _v1, Vertex _v2, Colour _color)
     {
         v0 = _v0.Pos;
         v1 = _v1.Pos;
@@ -66,11 +59,25 @@ class Triangle : public Shape
                 Vector3f bary = get_barycentric(interaction.p);
                 interaction.Ng = glm::normalize((bary.x*N[0])+(bary.y*N[1]) + bary.z * N[2]);
                 interaction.set_face_normal(r, outward_normal);
-                interaction.AOV = color.diffuse;
+
+                interaction.color.ambient = color.ambient;
+                interaction.color.diffuse = color.diffuse;
+                interaction.color.specular = color.specular;
+                interaction.color.emissive = color.emissive;
+
+                if (color.diffuse != Vector3f(0.0f)) interaction.AOV = color.diffuse;
+                else if (color.specular != Vector3f(0.0f)) interaction.AOV = color.specular;
+                else if (color.ambient != Vector3f(0.0f)) interaction.AOV = color.ambient;
+                else if (color.emissive != Vector3f(0.0f)) {
+                    interaction.AOV = Vector3f(0.0f);
+                }
+
+                //interaction.AOV = color.diffuse;
                 //Vector2f ST = bary.x * uv[0] + bary.y * uv[1] + bary.z * uv[2];
                 //interaction.AOV = Vector3f(ST.x, ST.y, 0.0f);
                 //interaction.AOV = glm::normalize((bary.x * N[0]) + (bary.y * N[1]) + bary.z * N[2]);
                 //interaction.AOV = bary;
+                
                 return true;
             }
         }
@@ -94,5 +101,5 @@ class Triangle : public Shape
     public:
         Vector3f v0,v1,v2,edge1,edge2,n,N[3];
         Vector2f uv[3];
-        Color color;
+        Colour color;
 };

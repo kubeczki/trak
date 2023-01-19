@@ -14,7 +14,7 @@ public:
 public:
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
-    std::vector<std::shared_ptr<Triangle> > tris;
+    std::vector<std::shared_ptr<Triangle>> tris;
 };
 TriangleMesh::TriangleMesh(const char *filepath) {
     
@@ -42,7 +42,7 @@ TriangleMesh::TriangleMesh(const char *filepath) {
     }
 
     std::vector<Vertex> vertices;
-    std::vector<Color> colors;
+    std::vector<Colour> colors;
     // Loop over shapes
     for (size_t s = 0; s < shapes.size(); s++) {
         // Loop over faces(triangles)
@@ -54,7 +54,7 @@ TriangleMesh::TriangleMesh(const char *filepath) {
             tinyobj::real_t Kd[3] = {materials[idm].diffuse[0],materials[idm].diffuse[1],materials[idm].diffuse[2]};
             tinyobj::real_t Ks[3] = {materials[idm].specular[0],materials[idm].specular[1],materials[idm].specular[2]};
             tinyobj::real_t Ke[3] = {materials[idm].emission[0],materials[idm].emission[1],materials[idm].emission[2]};
-            Color color;
+            Colour color;
             color.ambient = Vector3f(Ka[0],Ka[1],Ka[2]);
             color.diffuse = Vector3f(Kd[0],Kd[1],Kd[2]);
             color.specular = Vector3f(Ks[0],Ks[1],Ks[2]);
@@ -63,21 +63,25 @@ TriangleMesh::TriangleMesh(const char *filepath) {
             // Loop over vertices in the face.
             for (size_t v = 0; v < fv; v++) {
                 // access to vertex
+                Vertex vert;
                 
                 tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
-                tinyobj::real_t vx = attributes.vertices[3*idx.vertex_index+0];
+                tinyobj::real_t vx = attributes.vertices[3*idx.vertex_index+0]; 
                 tinyobj::real_t vy = attributes.vertices[3*idx.vertex_index+1];
                 tinyobj::real_t vz = attributes.vertices[3*idx.vertex_index+2];
-                tinyobj::real_t nx = attributes.normals[3*idx.normal_index+0];
-                tinyobj::real_t ny = attributes.normals[3*idx.normal_index+1];
-                tinyobj::real_t nz = attributes.normals[3*idx.normal_index+2];
-                tinyobj::real_t tx = attributes.texcoords[2*idx.texcoord_index+0];
-                tinyobj::real_t ty = attributes.texcoords[2*idx.texcoord_index+1];
-                
-                Vertex vert;
+                if (idx.normal_index >= 0) {
+                    tinyobj::real_t nx = attributes.normals[3 * idx.normal_index + 0];
+                    tinyobj::real_t ny = attributes.normals[3 * idx.normal_index + 1];
+                    tinyobj::real_t nz = attributes.normals[3 * idx.normal_index + 2];
+                    vert.Normal = Vector3f(nx, ny, nz);
+                }
+                if (idx.texcoord_index >= 0) {
+                    tinyobj::real_t tx = attributes.texcoords[2 * idx.texcoord_index + 0];
+                    tinyobj::real_t ty = attributes.texcoords[2 * idx.texcoord_index + 1];
+                    vert.UV = Vector2f(tx, ty);
+                }
+
                 vert.Pos = Vector3f(vx, vy, vz);
-                vert.Normal = Vector3f(nx, ny, nz);
-                vert.UV = Vector2f(tx, ty);
                 vertices.push_back(vert);
                 
             }

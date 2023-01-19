@@ -10,6 +10,32 @@ typedef glm::vec3 Vector3f;
 typedef glm::vec4 Vector4f;
 typedef glm::mat4 Matrix4x4f;
 
+struct Vec : public Vector3f
+{
+    Vec(double x_ = 0, double y_ = 0, double z_ = 0) { x = x_; y = y_; z = z_; }
+    Vec(float x_, float y_, float z_) { x = x_; y = y_; z = z_; }
+    Vec(Vector3f vec) { x = double(vec.x); y = double(vec.y); z = double(vec.z); }
+    Vec operator+(const Vec& b) const { return Vec(x + b.x, y + b.y, z + b.z); }
+    Vec operator-(const Vec& b) const { return Vec(x - b.x, y - b.y, z - b.z); }
+    Vec operator*(double b) const { return Vec(x * b, y * b, z * b); }
+    Vec mult(const Vec& b) const { return Vec(x * b.x, y * b.y, z * b.z); }
+    Vec& norm() {
+        double length = sqrt(x * x + y * y + z * z);
+        return *this = Vec(x / length, y / length, z / length);
+    }
+    double dot(const Vec& b) const { return x * b.x + y * b.y + z * b.z; }
+    Vec operator%(Vec& b) { return Vec(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x); }//cross pdt
+    Vector3f cast_to_3f() { return Vector3f(float(x), float(y), float(z)); }
+};
+
+struct Colour
+{
+    Vector3f ambient;
+    Vector3f diffuse;
+    Vector3f specular;
+    Vector3f emissive;
+};
+
 inline Vector3f TransformDirMatrix(const Matrix4x4f &x, const Vector3f &src)
 {
     Vector3f dst;
@@ -36,7 +62,7 @@ class Ray
 {
 public:
     Ray() {}
-    Ray(const Vector3f& orig, const Vector3f& dir,const float& tmin, const float& tmax) : o(orig), d(dir), t_min(tmin), t_max(tmax){}
+    Ray(const Vector3f& orig, const Vector3f& dir,const float& tmin = 0.0001f, const float& tmax = 9999.9f) : o(orig), d(dir), t_min(tmin), t_max(tmax){}
 public :
     Vector3f o;
     Vector3f d;
@@ -46,12 +72,13 @@ public :
 
 struct SurfaceInteraction
 {
-    Vector3f p; 
-    Vector3f Ng; 
-    float t; 
-    bool front_facing;
+    Vector3f p;             // Intersection point
+    Vector3f Ng;            // Geometric normal
+    float t;                // Distance along ray for intersection
+    bool front_facing;      // Determine if normal is aligned with ray (or against)
     Vector3f AOV;
     Vector2f st;
+    Colour color;
     inline void set_face_normal(const Ray& r, const Vector3f& outward_normal)
     {
         front_facing = glm::dot(r.d, outward_normal) <0.0f;
