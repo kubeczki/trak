@@ -49,7 +49,7 @@ class Triangle : public Shape
         t_temp = glm::dot(edge2,qvec)*inv_det;
         if(t_temp < r.t_max)
         {
-            if(t_temp < r.t_min)
+            if(t_temp > r.t_min)
             {
                 interaction.t = t_temp;
                 interaction.p = r.o + interaction.t * r.d;
