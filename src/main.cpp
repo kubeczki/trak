@@ -22,16 +22,17 @@ struct Options
 
 int main()
 {
-    Matrix4x4f c2w = Matrix4x4f(1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, -1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, -60.0f, 1.0f);
+    //Cameratoview: to ustawienie jest dość dobre dla scen w blenderze exportowanych z ustawieniami jak w teamsach
+    Matrix4x4f c2w = Matrix4x4f(-1.0f, 0.0f, 0.0f, 0.0f,//kierunek osi x(boki) 
+        0.0f, -1.0f, 0.0f, 0.0f,//kierunek osi y (dol-gora)
+        0.0f, 0.0f, 1.0f, 0.0f,//kierunek patrzenia z
+        0.0f, 0.0f, -72.0f, 1.0f);//od lewej: przesunięcie na boki, przesunięcie dół-góra, odległość my-centrum;
     Options options(1024, 768, 6.65f, c2w);
     Camera camera(options.width,options.height,options.fov,options.c2w);
     Ray camera_dir = camera.get_ray(options.width / 2, options.height / 2);
     
     Scene scene;
-    scene.Add(std::make_shared<TriangleMesh>("../obj/malaScenaPlus.obj"));
+    scene.Add(std::make_shared<TriangleMesh>("../obj/cornellBox/cornellBox_m.obj"));
     
     //scene.Add(std::make_shared<Sphere>(Vector3f(0.0f,0.0f,-50.0f),0.1f));
     std::cout <<"Ray Tracing!" <<std::endl;
@@ -45,7 +46,7 @@ int main()
     auto start = std::chrono::system_clock::now();
     std::cout <<"Rendering image ... \n";
 
-    uint32_t samples = 100;
+    uint32_t samples = 25;
     uint32_t depth = 5;
 
     uint64_t total_pixels = uint64_t(options.height) * uint64_t(options.width);

@@ -71,7 +71,7 @@ Vec Scene::trace_ray(const Ray& r, int depth, unsigned short* Xi)
     Vec n1 = Vec(interaction.Ng);           		// properly oriented surface normal
     Vec f = Vec(interaction.AOV);					// object color (BRDF modulator)
 
-    Vec emissive = Vec(interaction.color.ambient); // w mtb spodziewalem sie emissive, ale zamiast tego bylo ambient
+    Vec emissive = Vec(interaction.color.emissive); // w mtb spodziewalem sie emissive, ale zamiast tego bylo ambient
     Vec diffuse = Vec(interaction.color.diffuse);
     Vec specular = Vec(interaction.color.specular);
     Vec ambient = Vec(interaction.color.ambient);
