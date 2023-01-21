@@ -9,6 +9,28 @@
 #include <fstream>
 #include <stdlib.h>
 #include <iostream>
+#include "../headers/renderer.hpp"
+int main()
+{
+    Matrix4x4f c2w = Matrix4x4f(1.0f, 0.0f, 0.0f, 0.0f,//kierunek osi x(boki) 
+                                0.0f, 1.0f, 0.0f, 0.0f,//kierunek osi y (dol-gora)
+                                0.0f, 0.0f, 1.0f, 0.0f,//kierunek patrzenia z
+                                0.0f, 0.0f, 72.0f, 1.0f);//od lewej: przesunięcie na boki, przesunięcie dół-góra, odległość my-centrum;
+    Options options(1024, 768, 6.65f, c2w);
+    Renderer renderer(options);
+    uint32_t samples = 5;
+    renderer.load_scene("../obj/ScenaMala.txt");
+    renderer.render("ScenaMala.ppm",samples);
+    renderer.load_scene("../obj/ScenaSrednia.txt");
+    renderer.render("ScenaSrednia.ppm",samples);
+    renderer.load_scene("../obj/ScenaDuza.txt");
+    renderer.render("ScenaDuza.ppm",samples);
+    return 0;
+}
+
+
+
+/*
 struct Options 
 {
     uint32_t width;
@@ -29,7 +51,7 @@ int main()
                                 0.0f, 0.0f, 72.0f, 1.0f);//od lewej: przesunięcie na boki, przesunięcie dół-góra, odległość my-centrum;
     Options options(1024, 768, 6.65f, c2w);
     Camera camera(options.width,options.height,options.fov,options.c2w);
-    Ray camera_dir = camera.get_ray(options.width / 2, options.height / 2);
+    
     
     std::vector<std::string>scene_obj;
     std::ifstream myfile ("../obj/ScenaMala.txt");
@@ -107,3 +129,4 @@ int main()
     std::cout << "Rendering Completed on " << std::ctime(&end_time) << "\nTime taken to render: " << elapsed_seconds.count() << "s\n";
     return 0;
 }
+*/
