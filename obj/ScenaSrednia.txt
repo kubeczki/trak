@@ -1,0 +1,11 @@
+../obj/ScenaSrednia/BackWall.obj
+../obj/ScenaSrednia/RightWall.obj
+../obj/ScenaSrednia/LeftWall.obj
+../obj/ScenaSrednia/Floor.obj
+../obj/ScenaSrednia/Roof.obj
+../obj/ScenaSrednia/rSphere.obj
+../obj/ScenaSrednia/wSphere.obj
+../obj/ScenaSrednia/bSphere.obj
+../obj/ScenaSrednia/Light.obj
+../obj/ScenaSrednia/brSphere.obj
+../obj/ScenaSrednia/ySphere.obj

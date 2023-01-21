@@ -1,0 +1,10 @@
+../obj/ScenaDuza/BackWall.obj
+../obj/ScenaDuza/RightWall.obj
+../obj/ScenaDuza/LeftWall.obj
+../obj/ScenaDuza/Floor.obj
+../obj/ScenaDuza/Roof.obj
+../obj/ScenaDuza/rSphere.obj
+../obj/ScenaDuza/wSphere.obj
+../obj/ScenaDuza/bSphere.obj
+../obj/ScenaDuza/monkey.obj
+../obj/ScenaDuza/Light.obj

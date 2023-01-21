@@ -1,0 +1,8 @@
+../obj/ScenaMala/BackWall.obj
+../obj/ScenaMala/RightWall.obj
+../obj/ScenaMala/LeftWall.obj
+../obj/ScenaMala/Floor.obj
+../obj/ScenaMala/Roof.obj
+../obj/ScenaMala/SmallCube.obj
+../obj/ScenaMala/BigCube.obj
+../obj/ScenaMala/Light.obj

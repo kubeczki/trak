@@ -8,7 +8,7 @@
 #include <vector>
 #include <fstream>
 #include <stdlib.h>
-
+#include <iostream>
 struct Options 
 {
     uint32_t width;
@@ -24,17 +24,35 @@ int main()
 {
     //Cameratoview: to ustawienie jest dość dobre dla scen w blenderze exportowanych z ustawieniami jak w teamsach
     Matrix4x4f c2w = Matrix4x4f(1.0f, 0.0f, 0.0f, 0.0f,//kierunek osi x(boki) 
-        0.0f, 1.0f, 0.0f, 0.0f,//kierunek osi y (dol-gora)
-        0.0f, 0.0f, 1.0f, 0.0f,//kierunek patrzenia z
-        0.0f, 0.0f, 72.0f, 1.0f);//od lewej: przesunięcie na boki, przesunięcie dół-góra, odległość my-centrum;
+                                0.0f, 1.0f, 0.0f, 0.0f,//kierunek osi y (dol-gora)
+                                0.0f, 0.0f, 1.0f, 0.0f,//kierunek patrzenia z
+                                0.0f, 0.0f, 72.0f, 1.0f);//od lewej: przesunięcie na boki, przesunięcie dół-góra, odległość my-centrum;
     Options options(1024, 768, 6.65f, c2w);
     Camera camera(options.width,options.height,options.fov,options.c2w);
     Ray camera_dir = camera.get_ray(options.width / 2, options.height / 2);
     
+    std::vector<std::string>scene_obj;
+    std::ifstream myfile ("../obj/ScenaMala.txt");
+    if (myfile.is_open())
+    {
+        std::string line;
+        while ( std::getline (myfile,line) )
+        {
+         scene_obj.push_back(line);
+        }
+        myfile.close();
+    }
+    else
+    {
+        std::cout << "No such scene found!" << std::endl;
+    }
+
     Scene scene;
-    scene.Add(std::make_shared<TriangleMesh>("../obj/cornellBox/cornellBox_m.obj"));
-    
-    //scene.Add(std::make_shared<Sphere>(Vector3f(0.0f,0.0f,-50.0f),0.1f));
+    //scene.Add(std::make_shared<TriangleMesh>("../obj/cornellBox/MalaScenaSwiatlo.obj"));
+    for(int i =0; i<scene_obj.size(); i++)
+    {
+        scene.Add(std::make_shared<TriangleMesh>(scene_obj[i].c_str()));
+    }
     std::cout <<"Ray Tracing!" <<std::endl;
     std::ofstream ofs("render.ppm", std::ios::out | std::ios::binary);
     ofs << "P6\n" << options.width << " " << options.height << "\n255\n";
