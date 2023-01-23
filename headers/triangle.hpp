@@ -1,6 +1,8 @@
 #pragma once
 #include "shape.hpp"
 
+
+
 struct Vertex
 {
     Vector3f Pos;
@@ -26,6 +28,7 @@ class Triangle : public Shape
         N[2] = _v2.Normal;
         color = _color;
     }
+    //virtual Range getRange() const override{return Range{0,0,0,0,0,0};}
     void Triangle::printColor() const
     {
         std::cout <<color.ambient[0] << std::endl;

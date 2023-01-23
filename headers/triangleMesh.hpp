@@ -11,13 +11,17 @@ class TriangleMesh : public Shape {
 public:
     TriangleMesh(const char *filepath);
     bool intersect(const Ray& r, SurfaceInteraction &interaction) const override;
+    Range getRange() const{return range;} //override;
 public:
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
-    std::vector<std::shared_ptr<Triangle>> tris;
+    std::vector<Triangle> tris;
+    Range range;
+    Vector3f biggest;
 };
 TriangleMesh::TriangleMesh(const char *filepath) {
-    
+    biggest = {0,0,0};
+    range = {FLT_MAX,FLT_MAX,FLT_MAX,FLT_MIN,FLT_MIN,FLT_MIN};
     std::string inputfile = filepath;
     unsigned long pos = inputfile.find_last_of("/");
     std::string mtlbasepath = inputfile.substr(0, pos + 1);  
@@ -65,6 +69,9 @@ TriangleMesh::TriangleMesh(const char *filepath) {
                 // access to vertex
                 Vertex vert;
                 
+
+
+
                 tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
                 tinyobj::real_t vx = attributes.vertices[3*idx.vertex_index+0]; 
                 tinyobj::real_t vy = attributes.vertices[3*idx.vertex_index+1];
@@ -80,7 +87,27 @@ TriangleMesh::TriangleMesh(const char *filepath) {
                     tinyobj::real_t ty = attributes.texcoords[2 * idx.texcoord_index + 1];
                     vert.UV = Vector2f(tx, ty);
                 }
-
+                if(vx < range.x_min)
+                {
+                    range.x_min = vx;
+                }    else if(vx>range.x_max)
+                {
+                    range.x_max = vx;
+                }
+                if(vy < range.y_min)
+                {
+                    range.y_min = vy;
+                }    else if(vy>range.y_max)
+                {
+                    range.y_max = vy;
+                }
+                if(vz < range.z_min)
+                {
+                    range.z_min = vz;
+                }    else if(vz>range.z_max)
+                {
+                    range.z_max = vz;
+                }
                 vert.Pos = Vector3f(vx, vy, vz);
                 vertices.push_back(vert);
                 
@@ -93,7 +120,14 @@ TriangleMesh::TriangleMesh(const char *filepath) {
 
     // Loops vertices
     for (int i = 0; i < vertices.size() / 3; ++i) {
-        tris.push_back(std::make_shared<Triangle>(vertices[i * 3], vertices[i * 3 + 1], vertices[i * 3 + 2],colors[i]));
+        tris.push_back(Triangle(vertices[i * 3], vertices[i * 3 + 1], vertices[i * 3 + 2],colors[i]));
+        Vector3f check;
+        check.x = abs(vertices[i*3].Pos.x-vertices[i*3+1].Pos.x)>abs(vertices[i * 3].Pos.x-vertices[i * 3 + 2].Pos.x) ? abs(vertices[i*3].Pos.x-vertices[i*3+1].Pos.x):abs(vertices[i * 3].Pos.x-vertices[i * 3 + 2].Pos.x);
+        check.y = abs(vertices[i*3].Pos.y-vertices[i*3+1].Pos.y)>abs(vertices[i * 3].Pos.y-vertices[i * 3 + 2].Pos.y) ? abs(vertices[i*3].Pos.y-vertices[i*3+1].Pos.y):abs(vertices[i * 3].Pos.y-vertices[i * 3 + 2].Pos.y);
+        check.z = abs(vertices[i*3].Pos.z-vertices[i*3+1].Pos.z)>abs(vertices[i * 3].Pos.z-vertices[i * 3 + 2].Pos.z) ? abs(vertices[i*3].Pos.z-vertices[i*3+1].Pos.z):abs(vertices[i * 3].Pos.z-vertices[i * 3 + 2].Pos.z);
+        if(biggest.x<check.x) biggest.x = check.x;
+        if(biggest.y<check.y) biggest.y = check.y;
+        if(biggest.z<check.z) biggest.z = check.z;
     }
 
     std::cout<<"> Successfully opened "<<inputfile<<"! \n\n";
@@ -110,7 +144,7 @@ bool TriangleMesh::intersect(const Ray &r, SurfaceInteraction &interaction) cons
     SurfaceInteraction temp;
     long triangles_size = tris.size();
     for (long i = 0; i < triangles_size; ++i) {
-        if (tris[i]->intersect(r, temp)) {
+        if (tris[i].intersect(r, temp)) {
             hit_tri = true;
             tri_idx = i;
             r.t_max = temp.t;

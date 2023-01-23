@@ -9,7 +9,15 @@ typedef glm::vec2 Vector2f;
 typedef glm::vec3 Vector3f;
 typedef glm::vec4 Vector4f;
 typedef glm::mat4 Matrix4x4f;
-
+struct Range
+{
+    float x_min;
+    float y_min;
+    float z_min;
+    float x_max;
+    float y_max;
+    float z_max;
+};
 struct Vec : public Vector3f
 {
     Vec(double x_ = 0, double y_ = 0, double z_ = 0) { x = x_; y = y_; z = z_; }
